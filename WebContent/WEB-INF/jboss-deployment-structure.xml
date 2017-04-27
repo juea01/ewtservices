@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <exclusions>
+            <!-- Exclude RestEasy conflicts -->
+            <module name="javaee.api" />
+            <module name="javax.ws.rs.api"/>
+            <module name="org.jboss.resteasy.resteasy-jaxrs" />
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>
