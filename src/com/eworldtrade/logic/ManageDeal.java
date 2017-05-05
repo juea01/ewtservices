@@ -111,7 +111,7 @@ public class ManageDeal {
 						 String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
 						 dealImagePaths.add(imagePath);
 					 }
-					 dealDto.setDealImages(dealImagePaths);
+					 dealDto.setImages(dealImagePaths);
 				 }
 				 
 				
@@ -144,7 +144,7 @@ public class ManageDeal {
 		deal.setCurrency(dealDto.getCurrency());
 		
 		List <com.eworldtrade.model.entity.Deal_Image> dealImages = new ArrayList<com.eworldtrade.model.entity.Deal_Image>();
-		List <String> imagePaths = dealDto.getDealImages();
+		List <String> imagePaths = dealDto.getImages();
 		for (String imagePath: imagePaths) {
 			com.eworldtrade.model.entity.Deal_Image dealImage = new com.eworldtrade.model.entity.Deal_Image();
 			dealImage.setImagePath(imagePath);

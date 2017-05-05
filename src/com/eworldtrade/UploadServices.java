@@ -33,6 +33,7 @@ import com.eworldtrade.logic.ManageDeal;
 import com.eworldtrade.logic.ManageUser;
 import com.eworldtrade.model.dto.DealDTO;
 import com.eworldtrade.model.dto.UserDTO;
+import com.eworldtrade.utility.ServicesHelper;
 //import com.ewtmodel.eclipselink.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -56,7 +57,7 @@ public class UploadServices {
   @FormDataParam("price")String price,@FormDataParam("currency")String currency,@FormDataParam("description")String description) {
 		try {
 		System.out.println("File Received" + title +briefDescription+price+description);
-		createFolderIfNotExists(UPLOAD_FOLDER);
+		ServicesHelper.createFolderIfNotExists(UPLOAD_FOLDER);
 		
 		List<String> imagePaths = new ArrayList<String>();
 		
@@ -75,12 +76,12 @@ public class UploadServices {
 			BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
 			String fileName = bodyParts.get(i).getContentDisposition().getFileName();
 			String uploadedFileLocation = UPLOAD_FOLDER +"/"+ fileName;
-			saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
+			ServicesHelper.saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
 			imagePaths.add(fileName);
 		}
 		System.out.println("File Saved");
 		
-		dealDto.setDealImages(imagePaths);
+		dealDto.setImages(imagePaths);
 		ManageDeal manageDeal = new ManageDeal();
 		manageDeal.persistDeal(dealDto);
 		return "{\"response\":\"Success\"}";
@@ -113,24 +114,6 @@ public class UploadServices {
 //	}
 	
 	
-	private void createFolderIfNotExists(String dirName)throws Exception {
-		File theDir = new File(dirName);
-		if(!theDir.exists()) {
-			theDir.mkdir();
-		}
-	}
 	
-	private void saveToFile(InputStream inStream, String target) throws IOException {
-		FileOutputStream out = null;
-		int read = 0;
-		byte[] bytes = new byte[1024];
-		
-		out = new FileOutputStream(new File(target));
-		while ((read = inStream.read(bytes)) != -1) {
-			out.write(bytes,0,read);
-		}
-		out.flush();
-		out.close();
-	}
 
 }
