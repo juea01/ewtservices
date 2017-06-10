@@ -2,7 +2,10 @@ package com.eworldtrade.logic;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.ejb.EJB;
 import javax.naming.Context;
@@ -42,13 +45,12 @@ public class ManageUser {
 			com.eworldtrade.model.entity.User dbUser = new com.eworldtrade.model.entity.User();
 			dbUser.setUserName(user.getUserName());
 			dbUser.setUserEmail(user.getEmail());
-			dbUser.setUserDob(user.getDateOfBirth());
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			dbUser.setUserDob(df.parse(user.getDateOfBirth()));
 			dbUser.setUserGender(user.getGender());
-			
 			Calendar calendar = Calendar.getInstance();
 			dbUser.setUserRegistrationDate(calendar.getTime());
-			
-			
+			dbUser.setPassword(user.getPassword());
 			
 			//EntityManagerHelper.persistCommit(dbUser);
 			System.out.print("Persisted");

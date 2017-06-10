@@ -22,6 +22,7 @@ import com.eworldtrade.model.dto.DealDTO;
 import com.eworldtrade.model.dto.UserDTO;
 //import com.ewtmodel.eclipselink.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.wsdl.util.StringUtils;
 
 @Stateless
 @Path("/DealServices")
@@ -31,15 +32,29 @@ public class DealServices {
 	@GET
 	@Path("/deals")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getAllDeals(@QueryParam("start")int startIndex, @QueryParam("count")int totalSize) throws Exception{
+	public Response getAllDeals(@QueryParam("start")int startIndex, @QueryParam("count")int totalSize, @QueryParam("searchKeyWord")String searchKeyWord, @QueryParam("userId")String userId) throws Exception{
 		try {
+			
 			
        //TODO: DOJO supposed to send start and end value in Range which would be in header but it is not there yet, could be that need to do configuration
 	   // in JBOSS server
 		
 		ManageDeal manageDeal = new ManageDeal();
-		long totalDealsCount = manageDeal.countAllDeals();
-		List<DealDTO> dealDTOs = manageDeal.getAllDeals(startIndex, totalSize);
+		long totalDealsCount = 0;
+		List<DealDTO> dealDTOs = null;
+		
+		if ((null == searchKeyWord || "".equals(searchKeyWord)) && (null == userId || "".equals(userId))) {
+			totalDealsCount = manageDeal.countAllDeals();
+			 dealDTOs = manageDeal.getAllDeals(startIndex, totalSize);	
+		} else if (null == userId || "".equals(userId)){
+			 totalDealsCount = manageDeal.countAllDealsBySearchKeyWord(searchKeyWord);
+			 dealDTOs = manageDeal.getAllDealsBySearchKeyWord(startIndex, totalSize, searchKeyWord);	
+		} else {
+			 totalDealsCount = manageDeal.countAllDealsByUserId(userId);
+			 dealDTOs = manageDeal.getAllDealsByUserId(startIndex, totalSize, userId);
+		}
+			
+		
 		int totalRecords = dealDTOs.size();
 		//starting index is 0
 		totalRecords = totalRecords-1;

@@ -19,6 +19,7 @@ import com.eworldtrade.model.dto.DealDTO;
 import com.eworldtrade.model.dto.UserDTO;
 import com.eworldtrade.model.entity.Deal;
 import com.eworldtrade.model.entity.Deal_Image;
+import com.eworldtrade.model.entity.User;
 import com.eworldtrade.model.utility.EntityManagerHelper;
 
 
@@ -42,6 +43,34 @@ public class ManageDeal {
 			return totalDealsCount;
 		} catch (Exception exc){
 			System.out.println("Exception occurred in ManageDeal.countAllDeals");
+			exc.printStackTrace();
+			throw exc;
+		}
+		
+	}
+	
+	public long countAllDealsBySearchKeyWord(String searchKeyWord)throws Exception {
+		try {
+			Context context = new InitialContext();
+			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+			long totalDealsCount = userDao.countDealsBySearchKeyWord(searchKeyWord);
+			return totalDealsCount;
+		} catch (Exception exc){
+			System.out.println("Exception occurred in ManageDeal.countAllDeals");
+			exc.printStackTrace();
+			throw exc;
+		}
+		
+	}
+	
+	public long countAllDealsByUserId(String userId)throws Exception {
+		try {
+			Context context = new InitialContext();
+			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+			long totalDealsCount = userDao.countDealsByUserId(Integer.parseInt(userId));
+			return totalDealsCount;
+		} catch (Exception exc){
+			System.out.println("Exception occurred in ManageDeal.countAllDealsByUserId");
 			exc.printStackTrace();
 			throw exc;
 		}
@@ -82,6 +111,76 @@ public class ManageDeal {
 		}
 				
 	}
+	
+public List<DealDTO> getAllDealsBySearchKeyWord(int startIndex, int totalSize, String searchKeyWord)throws Exception {
+		
+		
+		try {
+			Context context = new InitialContext();
+			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+			
+			List<DealDTO> dealDTOs = new ArrayList<DealDTO>();
+			
+			
+			//EntityManagerHelper.startTransaction();
+			List<com.eworldtrade.model.entity.Deal> deals = userDao.getDealsBySearchKeyWord(startIndex, totalSize, searchKeyWord);
+			
+			for (com.eworldtrade.model.entity.Deal deal : deals){
+				DealDTO dealDto = new DealDTO();
+				dealDto.setDealId(deal.getDealId());
+				dealDto.setDealType(deal.getDealType());
+				dealDto.setTitle(deal.getTitle());
+				dealDto.setPrice(deal.getPrice());
+				dealDTOs.add(dealDto);
+			}
+									
+			System.out.println("Deal DTO Size"+dealDTOs.size());
+			
+			
+			return dealDTOs;
+			
+		} catch (Exception exc) {
+			System.out.print("Exception occurred in ManageUser.persistUser:");
+			exc.printStackTrace();
+			throw exc;
+		}
+				
+	}
+
+public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String userId)throws Exception {
+	
+	
+	try {
+		Context context = new InitialContext();
+		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+		
+		List<DealDTO> dealDTOs = new ArrayList<DealDTO>();
+		
+		
+		//EntityManagerHelper.startTransaction();
+		List<com.eworldtrade.model.entity.Deal> deals = userDao.getDealsByUserId(startIndex, totalSize, Integer.parseInt(userId));
+		
+		for (com.eworldtrade.model.entity.Deal deal : deals){
+			DealDTO dealDto = new DealDTO();
+			dealDto.setDealId(deal.getDealId());
+			dealDto.setDealType(deal.getDealType());
+			dealDto.setTitle(deal.getTitle());
+			dealDto.setPrice(deal.getPrice());
+			dealDTOs.add(dealDto);
+		}
+								
+		System.out.println("Deal DTO Size"+dealDTOs.size());
+		
+		
+		return dealDTOs;
+		
+	} catch (Exception exc) {
+		System.out.print("Exception occurred in ManageUser.getAllDealsByUserId:");
+		exc.printStackTrace();
+		throw exc;
+	}
+			
+}
 	
 	public DealDTO getDealById(int id)throws Exception {
 		
@@ -130,10 +229,12 @@ public class ManageDeal {
 				
 	}
 	
-	public void persistDeal(DealDTO dealDto) throws Exception  {
+	public com.eworldtrade.model.entity.Deal persistDeal(DealDTO dealDto) throws Exception  {
 		try {
 		Context context = new InitialContext();
 		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+		
+		User user = userDao.getUserByUserId(dealDto.getUserId());
 		
 		//EntityManagerHelper.startTransaction();
 		com.eworldtrade.model.entity.Deal deal = new com.eworldtrade.model.entity.Deal();
@@ -142,6 +243,7 @@ public class ManageDeal {
 		deal.setDescription(dealDto.getDescription());
 		deal.setPrice(dealDto.getPrice());
 		deal.setCurrency(dealDto.getCurrency());
+		deal.setUser(user);
 		
 		List <com.eworldtrade.model.entity.Deal_Image> dealImages = new ArrayList<com.eworldtrade.model.entity.Deal_Image>();
 		List <String> imagePaths = dealDto.getImages();
@@ -156,8 +258,9 @@ public class ManageDeal {
 		deal.setSubmissionDate(calendar.getTime());
 		
 		userDao.createDeal(deal);
-	
 		System.out.print("Persisted");
+		return deal;
+		
 		} catch (Exception exception){
 			exception.printStackTrace();
 			throw exception;

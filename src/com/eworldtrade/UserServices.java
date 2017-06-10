@@ -3,6 +3,7 @@ package com.eworldtrade;
 
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 import javax.ejb.Stateless;
 import javax.naming.NamingException;
@@ -62,8 +63,18 @@ public class UserServices {
 		
 		User dbUser = manageUser.getUserByUserNamePassword(user);
 		
+		SimpleDateFormat mdyFormat = new SimpleDateFormat("yyyy-MM-dd");
+		
+		
 		if (dbUser != null) {
-			return Response.ok(dbUser.getUserName()).build();
+			user = null;
+			user = new UserDTO();
+			user.setUserId(dbUser.getUserId());
+			user.setUserName(dbUser.getUserName());
+			user.setEmail(dbUser.getUserEmail());
+			user.setDateOfBirth(mdyFormat.format(dbUser.getUserDob()));
+			user.setGender(dbUser.getUserGender());
+			return Response.ok(user).build();
 			
 		} else {
 			System.out.println("Not valid");

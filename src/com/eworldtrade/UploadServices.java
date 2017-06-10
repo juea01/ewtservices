@@ -20,6 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.BodyPartEntity;
@@ -52,11 +53,11 @@ public class UploadServices {
 	@Path("/listDeal")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String listDeal(	
+	public Response listDeal(	
   @FormDataParam("uploadedfiles[]")List<FormDataBodyPart> bodyParts,@FormDataParam("title")String title,@FormDataParam("briefDescription")String briefDescription,
-  @FormDataParam("price")String price,@FormDataParam("currency")String currency,@FormDataParam("description")String description) {
+  @FormDataParam("price")String price,@FormDataParam("currency")String currency,@FormDataParam("description")String description,@FormDataParam("userId")String userId)throws Exception {
 		try {
-		System.out.println("File Received" + title +briefDescription+price+description);
+		System.out.println("File Received" + title +briefDescription+price+description+userId);
 		ServicesHelper.createFolderIfNotExists(UPLOAD_FOLDER);
 		
 		List<String> imagePaths = new ArrayList<String>();
@@ -67,8 +68,9 @@ public class UploadServices {
 		dealDto.setDescription(description);
 		dealDto.setCurrency(currency);
 		dealDto.setPrice(new BigDecimal(price));
+		dealDto.setUserId(Integer.parseInt(userId));
 		
-		for (int i = 0; i < bodyParts.size(); i++) {
+		for (int i = 0; i < bodyParts.size(); i++) {	
 			/*
 			 * Casting FormDataBodyPart to BodyPartEntity, which can give us
 			 * InputStream for uploaded file
@@ -83,11 +85,14 @@ public class UploadServices {
 		
 		dealDto.setImages(imagePaths);
 		ManageDeal manageDeal = new ManageDeal();
-		manageDeal.persistDeal(dealDto);
-		return "{\"response\":\"Success\"}";
+		com.eworldtrade.model.entity.Deal deal = manageDeal.persistDeal(dealDto);
+		dealDto = null;
+		dealDto = new DealDTO();
+		dealDto.setDealId(deal.getDealId());
+		return Response.ok(dealDto).build();
 		
 } catch (Exception exc) {
-		return exc.getMessage();	
+		throw exc;	
 		}
 	}
 	
