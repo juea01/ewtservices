@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ServicesHelper {
 
@@ -26,6 +28,11 @@ public class ServicesHelper {
 		out.flush();
 		out.close();
 	}
+	
+public static String convertToStringDate(Date date) {
+	SimpleDateFormat mdyFormat = new SimpleDateFormat("yyyy-MM-dd");
+	return mdyFormat.format(date);
+}
 
 	
 }
