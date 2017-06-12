@@ -200,7 +200,7 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 				dealDto.setTitle(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
 				dealDto.setDescription(deal.getDescription());
-				
+				dealDto.setUserId(deal.getUser().getUserId());
 				//images path
 				 List<Deal_Image> dealImages = deal.getDealImages();
 				 if (dealImages!= null) {
