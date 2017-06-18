@@ -94,8 +94,9 @@ public class ManageDeal {
 				DealDTO dealDto = new DealDTO();
 				dealDto.setDealId(deal.getDealId());
 				dealDto.setDealType(deal.getDealType());
-				dealDto.setTitle(deal.getTitle());
+				dealDto.setBriefDescription(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
+				dealDto.setCurrency(deal.getCurrency());
 				dealDTOs.add(dealDto);
 			}
 									
@@ -129,8 +130,9 @@ public List<DealDTO> getAllDealsBySearchKeyWord(int startIndex, int totalSize, S
 				DealDTO dealDto = new DealDTO();
 				dealDto.setDealId(deal.getDealId());
 				dealDto.setDealType(deal.getDealType());
-				dealDto.setTitle(deal.getTitle());
+				dealDto.setBriefDescription(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
+				dealDto.setCurrency(deal.getCurrency());
 				dealDTOs.add(dealDto);
 			}
 									
@@ -164,8 +166,9 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 			DealDTO dealDto = new DealDTO();
 			dealDto.setDealId(deal.getDealId());
 			dealDto.setDealType(deal.getDealType());
-			dealDto.setTitle(deal.getTitle());
+			dealDto.setBriefDescription(deal.getTitle());
 			dealDto.setPrice(deal.getPrice());
+			dealDto.setCurrency(deal.getCurrency());
 			dealDTOs.add(dealDto);
 		}
 								
@@ -197,8 +200,9 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 				dealDto = new DealDTO();
 				dealDto.setDealId(deal.getDealId());
 				dealDto.setDealType(deal.getDealType());
-				dealDto.setTitle(deal.getTitle());
+				dealDto.setBriefDescription(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
+				dealDto.setCurrency(deal.getCurrency());
 				dealDto.setDescription(deal.getDescription());
 				dealDto.setUserId(deal.getUser().getUserId());
 				//images path
@@ -239,7 +243,7 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 		//EntityManagerHelper.startTransaction();
 		com.eworldtrade.model.entity.Deal deal = new com.eworldtrade.model.entity.Deal();
 		deal.setDealType(dealDto.getDealType());
-		deal.setTitle(dealDto.getTitle());
+		deal.setTitle(dealDto.getBriefDescription());
 		deal.setDescription(dealDto.getDescription());
 		deal.setPrice(dealDto.getPrice());
 		deal.setCurrency(dealDto.getCurrency());
@@ -266,5 +270,43 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 			throw exception;
 		}
 	}
+	
+	public com.eworldtrade.model.entity.Deal updateDeal(DealDTO dealDto) throws Exception  {
+		try {
+		Context context = new InitialContext();
+		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+		
+		User user = userDao.getUserByUserId(dealDto.getUserId());
+		Deal deal = userDao.getDealById(dealDto.getDealId());
+		System.out.println(deal.getDealId());
+		deal.setDealType(dealDto.getDealType());
+		deal.setTitle(dealDto.getBriefDescription());
+		deal.setDescription(dealDto.getDescription());
+		deal.setPrice(dealDto.getPrice());
+		deal.setCurrency(dealDto.getCurrency());
+		deal.setUser(user);
+		
+		List <com.eworldtrade.model.entity.Deal_Image> dealImages = new ArrayList<com.eworldtrade.model.entity.Deal_Image>();
+		List <String> imagePaths = dealDto.getImages();
+		for (String imagePath: imagePaths) {
+			com.eworldtrade.model.entity.Deal_Image dealImage = new com.eworldtrade.model.entity.Deal_Image();
+			dealImage.setImagePath(imagePath);
+			dealImages.add(dealImage);
+		}
+		deal.setDealImages(dealImages);
+		
+		Calendar calendar = Calendar.getInstance();
+		deal.setSubmissionDate(calendar.getTime());
+		
+		userDao.updateDeal(deal);
+		System.out.print(deal.getDealId() + "deal Updated");
+		return deal;
+		
+		} catch (Exception exception){
+			exception.printStackTrace();
+			throw exception;
+		}
+	}
+
 
 }

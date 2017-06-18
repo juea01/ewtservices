@@ -2,9 +2,13 @@ package com.eworldtrade;
 
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -16,10 +20,17 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.media.multipart.BodyPartEntity;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
+
 import com.eworldtrade.logic.ManageDeal;
 import com.eworldtrade.logic.ManageUser;
 import com.eworldtrade.model.dto.DealDTO;
+import com.eworldtrade.model.dto.ResponseMessage;
 import com.eworldtrade.model.dto.UserDTO;
+import com.eworldtrade.model.entity.Deal;
+import com.eworldtrade.utility.ServicesHelper;
 //import com.ewtmodel.eclipselink.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.wsdl.util.StringUtils;
@@ -28,6 +39,7 @@ import com.ibm.wsdl.util.StringUtils;
 @Path("/DealServices")
 public class DealServices {
 	
+	private static final String UPLOAD_FOLDER = "/Users/macbookair/Documents/uploadFiles";
 	
 	@GET
 	@Path("/deals")
@@ -82,6 +94,65 @@ public class DealServices {
 		} catch (Exception exc) {
 		exc.printStackTrace();	
 		throw exc;
+		}
+	}
+	
+	@POST
+	@Path("/updateDeal")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateDeal(	
+  @FormDataParam("uploadedfiles[]")List<FormDataBodyPart> bodyParts,@FormDataParam("dealId")String dealId,@FormDataParam("dealType")String dealType,@FormDataParam("briefDescription")String briefDescription,
+  @FormDataParam("price")String price,@FormDataParam("currency")String currency,@FormDataParam("description")String description,
+  @FormDataParam("userId")String userId,@FormDataParam("existingImages[]")String images)throws Exception {
+		try {
+		System.out.println("File Received" + dealType +briefDescription+price+description+userId+images);
+		ServicesHelper.createFolderIfNotExists(UPLOAD_FOLDER);
+		
+		List<String> imagePaths = new ArrayList<String>();
+		List<String> existingImages = Arrays.asList(images.split("\\s*,\\s*"));
+		
+		DealDTO dealDto = new DealDTO();
+		dealDto.setDealId(Integer.parseInt(dealId));
+		dealDto.setDealType(dealType);
+		dealDto.setBriefDescription(briefDescription);
+		dealDto.setDescription(description);
+		dealDto.setCurrency(currency);
+		dealDto.setPrice(new BigDecimal(price));
+		dealDto.setUserId(Integer.parseInt(userId));
+		
+		if (null != bodyParts) {
+			for (int i = 0; i < bodyParts.size(); i++) {	
+				/*
+				 * Casting FormDataBodyPart to BodyPartEntity, which can give us
+				 * InputStream for uploaded file
+				 */
+				BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
+				String fileName = bodyParts.get(i).getContentDisposition().getFileName();
+				String uploadedFileLocation = UPLOAD_FOLDER +"/"+ fileName;
+				ServicesHelper.saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
+				imagePaths.add(fileName);
+			}
+		}
+		
+		if (null != existingImages) {
+			for (int i=0;i<existingImages.size();i++){
+				imagePaths.add(existingImages.get(i));
+				System.out.println(existingImages.get(i));
+				
+			}
+		}
+		
+		
+		System.out.println("File Saved");
+		
+		dealDto.setImages(imagePaths);
+		ManageDeal manageDeal = new ManageDeal();
+		Deal deal = manageDeal.updateDeal(dealDto);
+		return Response.ok(deal).build();
+		
+} catch (Exception exc) {
+		throw exc;	
 		}
 	}
 

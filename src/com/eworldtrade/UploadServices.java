@@ -54,17 +54,17 @@ public class UploadServices {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response listDeal(	
-  @FormDataParam("uploadedfiles[]")List<FormDataBodyPart> bodyParts,@FormDataParam("title")String title,@FormDataParam("briefDescription")String briefDescription,
+  @FormDataParam("uploadedfiles[]")List<FormDataBodyPart> bodyParts,@FormDataParam("dealType")String dealType,@FormDataParam("briefDescription")String briefDescription,
   @FormDataParam("price")String price,@FormDataParam("currency")String currency,@FormDataParam("description")String description,@FormDataParam("userId")String userId)throws Exception {
 		try {
-		System.out.println("File Received" + title +briefDescription+price+description+userId);
+		System.out.println("File Received" + dealType +briefDescription+price+description+userId);
 		ServicesHelper.createFolderIfNotExists(UPLOAD_FOLDER);
 		
 		List<String> imagePaths = new ArrayList<String>();
 		
 		DealDTO dealDto = new DealDTO();
-		dealDto.setDealType(title);
-		dealDto.setTitle(briefDescription);
+		dealDto.setDealType(dealType);
+		dealDto.setBriefDescription(briefDescription);
 		dealDto.setDescription(description);
 		dealDto.setCurrency(currency);
 		dealDto.setPrice(new BigDecimal(price));
