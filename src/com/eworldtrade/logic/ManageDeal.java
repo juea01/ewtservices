@@ -97,6 +97,14 @@ public class ManageDeal {
 				dealDto.setBriefDescription(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
 				dealDto.setCurrency(deal.getCurrency());
+				
+				Deal_Image dealImage = deal.getDealImages().get(0);
+				List<String> dealImagePaths = new ArrayList<String>();
+			    //TODO: this url need to make configurable
+			    String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
+			    dealImagePaths.add(imagePath); 
+			    dealDto.setImages(dealImagePaths);
+				
 				dealDTOs.add(dealDto);
 			}
 									
