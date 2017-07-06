@@ -97,14 +97,7 @@ public class ManageDeal {
 				dealDto.setBriefDescription(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
 				dealDto.setCurrency(deal.getCurrency());
-				
-				Deal_Image dealImage = deal.getDealImages().get(0);
-				List<String> dealImagePaths = new ArrayList<String>();
-			    //TODO: this url need to make configurable
-			    String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
-			    dealImagePaths.add(imagePath); 
-			    dealDto.setImages(dealImagePaths);
-				
+				setFirstDealImage(deal,dealDto);					
 				dealDTOs.add(dealDto);
 			}
 									
@@ -141,6 +134,7 @@ public List<DealDTO> getAllDealsBySearchKeyWord(int startIndex, int totalSize, S
 				dealDto.setBriefDescription(deal.getTitle());
 				dealDto.setPrice(deal.getPrice());
 				dealDto.setCurrency(deal.getCurrency());
+				setFirstDealImage(deal,dealDto);
 				dealDTOs.add(dealDto);
 			}
 									
@@ -177,6 +171,7 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 			dealDto.setBriefDescription(deal.getTitle());
 			dealDto.setPrice(deal.getPrice());
 			dealDto.setCurrency(deal.getCurrency());
+			setFirstDealImage(deal,dealDto);
 			dealDTOs.add(dealDto);
 		}
 								
@@ -317,4 +312,20 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 	}
 
 
+	/**
+	 * This method is used to set only one image path to DealDto object
+	 * @param deal - Deal object which stored image path is interested in.
+	 * @param dealDto - DealDTO object where image path need to be set.
+	 */
+	private void setFirstDealImage(com.eworldtrade.model.entity.Deal deal, DealDTO dealDto) {
+		if (null != deal.getDealImages()) {
+			Deal_Image dealImage = deal.getDealImages().get(0);
+			List<String> dealImagePaths = new ArrayList<String>();
+		    //TODO: this url need to make configurable
+		    String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
+		    dealImagePaths.add(imagePath); 
+		    dealDto.setImages(dealImagePaths);
+		}
+	}
+	
 }
