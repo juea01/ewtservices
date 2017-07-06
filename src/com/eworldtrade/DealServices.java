@@ -2,6 +2,7 @@ package com.eworldtrade;
 
 
 
+import java.io.FileNotFoundException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,9 +130,15 @@ public class DealServices {
 				 */
 				BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
 				String fileName = bodyParts.get(i).getContentDisposition().getFileName();
-				String uploadedFileLocation = UPLOAD_FOLDER +"/"+ fileName;
-				ServicesHelper.saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
-				imagePaths.add(fileName);
+				try {
+					if(null != fileName && fileName.length() != 0) {
+						String uploadedFileLocation = UPLOAD_FOLDER +"/"+ fileName;
+						ServicesHelper.saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
+						imagePaths.add(fileName);
+					}
+			     } catch (FileNotFoundException exc) {
+			    	 System.out.println("File not found exception occurred while trying to save file in UploadServices.listDeal(), with file name:"+fileName);
+			   }
 			}
 		}
 		

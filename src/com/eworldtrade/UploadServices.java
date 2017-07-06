@@ -3,6 +3,7 @@ package com.eworldtrade;
 
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +38,7 @@ import com.eworldtrade.model.dto.UserDTO;
 import com.eworldtrade.utility.ServicesHelper;
 //import com.ewtmodel.eclipselink.dto.UserDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.wsdl.util.StringUtils;
 
 
 
@@ -70,16 +72,26 @@ public class UploadServices {
 		dealDto.setPrice(new BigDecimal(price));
 		dealDto.setUserId(Integer.parseInt(userId));
 		
-		for (int i = 0; i < bodyParts.size(); i++) {	
-			/*
-			 * Casting FormDataBodyPart to BodyPartEntity, which can give us
-			 * InputStream for uploaded file
-			 */
-			BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
-			String fileName = bodyParts.get(i).getContentDisposition().getFileName();
-			String uploadedFileLocation = UPLOAD_FOLDER +"/"+ fileName;
-			ServicesHelper.saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
-			imagePaths.add(fileName);
+		if (null != bodyParts) {
+			for (int i = 0; i < bodyParts.size(); i++) {	
+				/*
+				 * Casting FormDataBodyPart to BodyPartEntity, which can give us
+				 * InputStream for uploaded file
+				 */
+				
+					BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
+					String fileName = bodyParts.get(i).getContentDisposition().getFileName();
+					try {
+					if(null != fileName && fileName.length() != 0) {
+						String uploadedFileLocation = UPLOAD_FOLDER +"/"+ fileName;
+						ServicesHelper.saveToFile(bodyPartEntity.getInputStream(), uploadedFileLocation);
+						imagePaths.add(fileName);
+					}
+				} catch (FileNotFoundException exc) {
+					System.out.println("File not found exception occurred while trying to save file in UploadServices.listDeal(), with file name:"+fileName);
+				}
+				
+			}
 		}
 		System.out.println("File Saved");
 		
