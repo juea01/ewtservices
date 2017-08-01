@@ -318,14 +318,19 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 	 * @param dealDto - DealDTO object where image path need to be set.
 	 */
 	private void setFirstDealImage(com.eworldtrade.model.entity.Deal deal, DealDTO dealDto) {
-		if (null != deal.getDealImages()) {
-			Deal_Image dealImage = deal.getDealImages().get(0);
-			List<String> dealImagePaths = new ArrayList<String>();
-		    //TODO: this url need to make configurable
-		    String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
-		    dealImagePaths.add(imagePath); 
-		    dealDto.setImages(dealImagePaths);
+		try {
+			if (null != deal.getDealImages()) {
+				Deal_Image dealImage = deal.getDealImages().get(0);
+				List<String> dealImagePaths = new ArrayList<String>();
+			    //TODO: this url need to make configurable
+			    String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
+			    dealImagePaths.add(imagePath); 
+			    dealDto.setImages(dealImagePaths);
+			}
+		} catch (Exception exception){
+			exception.printStackTrace();
 		}
+		
 	}
 	
 }
