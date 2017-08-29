@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Path("/GemJewelleryServices")
 public class GemJewelleryServices {
 	
-	private static final String UPLOAD_FOLDER = "/Users/macbookair/Documents/uploadFiles";
+	private static final String UPLOAD_FOLDER = "/usr/local/ewt/uploadFiles";
 	
 	@GET
 	@Path("/gemsJewelleries")

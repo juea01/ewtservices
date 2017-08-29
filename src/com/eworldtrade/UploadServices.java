@@ -46,7 +46,7 @@ import com.ibm.wsdl.util.StringUtils;
 @Path("/UploadServices")
 public class UploadServices {
 	
-	private static final String UPLOAD_FOLDER = "/Users/macbookair/Documents/uploadFiles";
+	private static final String UPLOAD_FOLDER = "/usr/local/ewt/uploadFiles";
 	
 	@Context
 	private UriInfo context;

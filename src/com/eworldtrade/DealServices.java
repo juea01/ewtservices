@@ -40,7 +40,7 @@ import com.ibm.wsdl.util.StringUtils;
 @Path("/DealServices")
 public class DealServices {
 	
-	private static final String UPLOAD_FOLDER = "/Users/macbookair/Documents/uploadFiles";
+	private static final String UPLOAD_FOLDER = "/usr/local/ewt/uploadFiles";
 	
 	@GET
 	@Path("/deals")
