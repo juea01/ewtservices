@@ -21,6 +21,7 @@ import com.eworldtrade.model.entity.Deal;
 import com.eworldtrade.model.entity.Deal_Image;
 import com.eworldtrade.model.entity.User;
 import com.eworldtrade.model.utility.EntityManagerHelper;
+import com.eworldtrade.utility.ServicesHelper;
 
 
 //import com.ewtmodel.eclipselink.dao.UserDAO;
@@ -33,12 +34,25 @@ import com.eworldtrade.model.utility.EntityManagerHelper;
 public class ManageDeal {
 	
 	//@EJB
-	private DAO userDao;
+	private DAO userDao = initiateUserDao();
+	
+	private DAO initiateUserDao() {
+		if (userDao == null) {
+			Context context;
+			try {
+				context = new InitialContext();
+				userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return userDao;
+	}
 	
 	public long countAllDeals()throws Exception {
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			long totalDealsCount = userDao.countDeals();
 			return totalDealsCount;
 		} catch (Exception exc){
@@ -51,8 +65,6 @@ public class ManageDeal {
 	
 	public long countAllDealsBySearchKeyWord(String searchKeyWord)throws Exception {
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			long totalDealsCount = userDao.countDealsBySearchKeyWord(searchKeyWord);
 			return totalDealsCount;
 		} catch (Exception exc){
@@ -65,8 +77,6 @@ public class ManageDeal {
 	
 	public long countAllDealsByUserId(String userId)throws Exception {
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			long totalDealsCount = userDao.countDealsByUserId(Integer.parseInt(userId));
 			return totalDealsCount;
 		} catch (Exception exc){
@@ -81,8 +91,6 @@ public class ManageDeal {
 		
 		
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			
 			List<DealDTO> dealDTOs = new ArrayList<DealDTO>();
 			
@@ -118,8 +126,6 @@ public List<DealDTO> getAllDealsBySearchKeyWord(int startIndex, int totalSize, S
 		
 		
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			
 			List<DealDTO> dealDTOs = new ArrayList<DealDTO>();
 			
@@ -155,8 +161,6 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 	
 	
 	try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 		
 		List<DealDTO> dealDTOs = new ArrayList<DealDTO>();
 		
@@ -192,8 +196,6 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 		
 		
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			
 			Deal deal = userDao.getDealById(id);
 			DealDTO dealDto = null;
@@ -214,7 +216,7 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 					 List<String> dealImagePaths = new ArrayList<String>();
 					 for (Deal_Image dealImage : dealImages) {
 						 //TODO: this url need to make configurable
-						 String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
+						 String imagePath = "http://"+ServicesHelper.getUrl()+"ImageServlet/ImageServlet/"+dealImage.getImagePath();
 						 dealImagePaths.add(imagePath);
 					 }
 					 dealDto.setImages(dealImagePaths);
@@ -238,8 +240,6 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 	
 	public com.eworldtrade.model.entity.Deal persistDeal(DealDTO dealDto) throws Exception  {
 		try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 		
 		User user = userDao.getUserByUserId(dealDto.getUserId());
 		
@@ -276,9 +276,6 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 	
 	public com.eworldtrade.model.entity.Deal updateDeal(DealDTO dealDto) throws Exception  {
 		try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
-		
 		User user = userDao.getUserByUserId(dealDto.getUserId());
 		Deal deal = userDao.getDealById(dealDto.getDealId());
 		System.out.println(deal.getDealId());
@@ -323,7 +320,7 @@ public List<DealDTO> getAllDealsByUserId(int startIndex, int totalSize, String u
 				Deal_Image dealImage = deal.getDealImages().get(0);
 				List<String> dealImagePaths = new ArrayList<String>();
 			    //TODO: this url need to make configurable
-			    String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+dealImage.getImagePath();
+			    String imagePath = "http://"+ServicesHelper.getUrl()+"ImageServlet/ImageServlet/"+dealImage.getImagePath();
 			    dealImagePaths.add(imagePath); 
 			    dealDto.setImages(dealImagePaths);
 			}

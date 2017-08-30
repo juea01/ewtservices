@@ -33,14 +33,27 @@ import com.eworldtrade.model.utility.EntityManagerHelper;
 public class ManageUser {
 	
 	//@EJB
-	private DAO userDao;
+	  private DAO userDao = initiateUserDao();
+		
+		private DAO initiateUserDao() {
+			if (userDao == null) {
+				Context context;
+				try {
+					context = new InitialContext();
+					userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+				} catch (NamingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			return userDao;
+		}
 	
 	public String persistUser(UserDTO user) {
 		
 		
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			
 			//EntityManagerHelper.startTransaction();
 			com.eworldtrade.model.entity.User dbUser = new com.eworldtrade.model.entity.User();
@@ -70,8 +83,6 @@ public class ManageUser {
 	public String updateUser(UserDTO user) {
 		
 		try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 		
 		com.eworldtrade.model.entity.User dbUser = userDao.getUserByUserId(user.getUserId());
 		dbUser.setUserName(user.getUserName());
@@ -83,12 +94,12 @@ public class ManageUser {
 		dbUser.setUserRegistrationDate(calendar.getTime());
 		userDao.updateUser(dbUser);
 		return("Your detail has been successfully updated");
-		} catch (NamingException exception){
-			exception.printStackTrace();
-			return ("Internal server error occurred.");
-		} catch(ParseException exception){
+		}  catch(ParseException exception){
 			exception.printStackTrace();
 			return ("Invalid Date is provided.");
+		} catch (Exception exception){
+			exception.printStackTrace();
+			return ("Internal server error occurred.");
 		}
 		
 		
@@ -96,12 +107,10 @@ public class ManageUser {
 	
 	public User getUserByUserNamePassword(UserDTO user) throws NamingException{
 		
-		try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");	
+		try {	
 		User dbUser = userDao.getUserByUserNamePassword(user.getUserName(), user.getPassword());
 		return dbUser;
-		} catch (NamingException exc) {
+		} catch (Exception exc) {
 			exc.printStackTrace();
 			throw new NamingException("Unexpected naming exception occurred.");
 		}
@@ -111,12 +120,10 @@ public class ManageUser {
 	
 public User getUserByUserId(int userId) throws NamingException{
 		
-		try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");	
+		try {	
 		User dbUser =  userDao.getUserByUserId(userId);
 		return dbUser;
-		} catch (NamingException exc) {
+		} catch (Exception exc) {
 			exc.printStackTrace();
 			throw new NamingException("Unexpected naming exception occurred.");
 		}

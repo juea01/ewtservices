@@ -23,6 +23,7 @@ import com.eworldtrade.model.entity.Deal_Image;
 import com.eworldtrade.model.entity.GemJewellery;
 import com.eworldtrade.model.entity.GemJewelleryImage;
 import com.eworldtrade.model.utility.EntityManagerHelper;
+import com.eworldtrade.utility.ServicesHelper;
 
 
 //import com.ewtmodel.eclipselink.dao.UserDAO;
@@ -35,12 +36,25 @@ import com.eworldtrade.model.utility.EntityManagerHelper;
 public class ManageGemJewellery {
 	
 	//@EJB
-	private DAO userDao;
+  private DAO userDao = initiateUserDao();
+	
+	private DAO initiateUserDao() {
+		if (userDao == null) {
+			Context context;
+			try {
+				context = new InitialContext();
+				userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		return userDao;
+	}
 	
 	public long countAllGemsJewelleries()throws Exception {
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			long totalGemJewelleryCount = userDao.countGemsJewelleries();
 			return totalGemJewelleryCount;
 		} catch (Exception exc){
@@ -55,8 +69,6 @@ public class ManageGemJewellery {
 		
 		
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			
 			List<GemJewelleryDTO> gemJewelleryDTOs = new ArrayList<GemJewelleryDTO>();
 			
@@ -90,8 +102,6 @@ public class ManageGemJewellery {
 		
 		
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			
 			GemJewellery gemJewellery = userDao.getGemJewelleryById(id);
 			GemJewelleryDTO gemJewelleryDTO = null;
@@ -111,7 +121,7 @@ public class ManageGemJewellery {
 					 List<String> gemJewelleryImagePaths = new ArrayList<String>();
 					 for (GemJewelleryImage gemJewelleryImage : gemJewelleryImages) {
 						 //TODO: this url need to make configurable
-						 String imagePath = "http://localhost:8080/ImageServlet/ImageServlet/"+gemJewelleryImage.getImagePath();
+						 String imagePath = "http://"+ServicesHelper.getUrl()+"ImageServlet/ImageServlet/"+gemJewelleryImage.getImagePath();
 						 gemJewelleryImagePaths.add(imagePath);
 					 }
 					 gemJewelleryDTO.setImages(gemJewelleryImagePaths);
@@ -132,8 +142,6 @@ public class ManageGemJewellery {
 	
 	public void persistGemJewellery(GemJewelleryDTO gemJewelleryDto) throws Exception  {
 		try {
-		Context context = new InitialContext();
-		userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 		
 		//EntityManagerHelper.startTransaction();
 		com.eworldtrade.model.entity.GemJewellery gemJewellery = new com.eworldtrade.model.entity.GemJewellery();

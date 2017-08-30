@@ -6,8 +6,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Properties;
 
 public class ServicesHelper {
+	
+	static Properties pro = initialiseProperties();
+	
+	private static  Properties initialiseProperties() {
+		try {
+		InputStream settingsStream = ServicesHelper.class.getClassLoader().getResourceAsStream("settings.properties");
+		Properties pro = new Properties();
+		pro.load(settingsStream);
+		return pro;
+		} catch (Exception exc){
+			exc.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static String getUploadFileLocation() {
+		return pro.getProperty("uploadImageFileLocation");
+	}
+	
+	public static String getUrl() {
+		return pro.getProperty("url");
+	}
 
 	public static void createFolderIfNotExists(String dirName)throws Exception {
 		File theDir = new File(dirName);

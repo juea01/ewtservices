@@ -36,12 +36,25 @@ import com.eworldtrade.model.utility.EntityManagerHelper;
 public class ManageUtilityService {
 	
 	//@EJB
-	private DAO userDao;
+	 private DAO userDao = initiateUserDao();
+		
+		private DAO initiateUserDao() {
+			if (userDao == null) {
+				Context context;
+				try {
+					context = new InitialContext();
+					userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
+				} catch (NamingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			return userDao;
+		}
 	
 	public JSONArray getAllProductList()throws Exception {
 		try {
-			Context context = new InitialContext();
-			userDao = (DAO) context.lookup("global/EWTRestServices/UserDAO!com.eworldtrade.model.dao.DAO");
 			List<ProductList> productLists = userDao.getAllProductList();
 			
 			
