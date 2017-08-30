@@ -14,7 +14,7 @@ public class ServicesHelper {
 	
 	private static  Properties initialiseProperties() {
 		try {
-		InputStream settingsStream = ServicesHelper.class.getClassLoader().getResourceAsStream("settings.properties");
+		InputStream settingsStream = ServicesHelper.class.getClassLoader().getResourceAsStream("setting.properties");
 		Properties pro = new Properties();
 		pro.load(settingsStream);
 		return pro;
@@ -24,7 +24,7 @@ public class ServicesHelper {
 		return null;
 	}
 	
-	public static String getUploadFileLocation() {
+	public static String getUploadFileLocation() { 
 		return pro.getProperty("uploadImageFileLocation");
 	}
 	
